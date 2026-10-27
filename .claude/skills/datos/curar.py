@@ -9,11 +9,19 @@ Uso:
       --salida datos/btc-usd_1h_yahoo.csv \
       --informe resultados/btc-usd_1h_yahoo_calidad.md
 
---mercado: cripto (24/7) · forex (domingo 17:00 a viernes 17:00 de Nueva York) · bolsa (lunes a viernes)
+El calendario NO se supone: se aprende del propio archivo. El script mira en qué días y a qué horas
+suele haber velas (en al menos la mitad de las semanas) y solo cuenta como hueco lo que falta dentro
+de ese horario. Así respeta las pausas diarias (oro, índices CFD, petróleo), los fines de semana y el
+24/7 de cripto. Los días enteros sin sesión (festivos, cierres) se informan aparte como aviso.
+--mercado es opcional e informativo (cripto, forex, bolsa, cfd...).
 --zona: zona horaria de las fechas del CSV crudo si vienen sin zona (UTC, America/New_York, EST...).
 Salida: fecha (UTC, ISO), open, high, low, close, volume. Volumen vacío si la fuente no lo trae.
 """
 import argparse, sys
+try:
+    sys.stdout.reconfigure(encoding='utf-8')   # Windows: que los acentos no rompan la consola
+except Exception:
+    pass
 import numpy as np
 import pandas as pd
 
@@ -22,12 +30,26 @@ ALIAS = {
     'open': ['open', 'apertura', 'abertura', 'o'],
     'high': ['high', 'maximo', 'máximo', 'max', 'h'],
     'low': ['low', 'minimo', 'mínimo', 'min', 'l'],
-    'close': ['close', 'cierre', 'fechamento', 'c', 'adj close'],
-    'volume': ['volume', 'volumen', 'vol', 'v', 'tick volume', 'tickvol'],
+    'close': ['close', 'cierre', 'fechamento', 'c', 'adj close', 'último', 'ultimo', 'price', 'precio', 'last'],
+    'volume': ['volume', 'volumen', 'vol', 'vol.', 'v', 'tick volume', 'tickvol', 'real volume'],
 }
 PASO = {'1m': '1min', '5m': '5min', '15m': '15min', '30m': '30min', '1h': '1h', '4h': '4h', '1d': '1D'}
 MIN_ANIOS_APTA, MIN_ANIOS = 3.0, 1.0      # provisional: menos de 1 año = NO APTA; de 1 a 3 = aviso
 MAX_ELIMINADAS, MAX_HUECOS = 0.05, 0.05    # provisional: más del 5 % = NO APTA
+
+
+def numero(serie):
+    """Convierte precios escritos de cualquier forma: 2.345,67 · 2,345.67 · 1,23K · 4.5M."""
+    t = serie.astype(str).str.strip().str.replace('\u00a0', '', regex=False).str.replace(' ', '', regex=False)
+    mult = pd.Series(1.0, index=t.index)
+    for suf, m in (('K', 1e3), ('M', 1e6), ('B', 1e9)):
+        es = t.str.upper().str.endswith(suf)
+        mult[es] = m
+        t = t.where(~es, t.str[:-1])
+    coma_dec = t.str.fullmatch(r'-?[\d.]*,\d+')          # 2.345,67 o 0,5
+    t = t.where(~coma_dec, t.str.replace('.', '', regex=False).str.replace(',', '.', regex=False))
+    t = t.str.replace(',', '', regex=False)                 # 2,345.67
+    return pd.to_numeric(t.str.replace('%', '', regex=False), errors='coerce') * mult
 
 
 def leer(ruta):
@@ -35,6 +57,11 @@ def leer(ruta):
     if len(df.columns) in (5, 6) and not any(str(c).strip().lower() in ALIAS['fecha'] for c in df.columns):
         df = pd.read_csv(ruta, sep=None, engine='python', header=None)   # sin encabezado (HistData)
         df.columns = ['fecha', 'open', 'high', 'low', 'close', 'volume'][:len(df.columns)]
+    df.columns = [str(c).strip().strip('<>').strip() for c in df.columns]   # MetaTrader: <DATE>, <OPEN>...
+    low = {c.lower(): c for c in df.columns}
+    if 'date' in low and 'time' in low:                   # fecha y hora en columnas separadas
+        df['fecha'] = df[low['date']].astype(str) + ' ' + df[low['time']].astype(str)
+        df = df.drop(columns=[low['date'], low['time']])
     cols = {}
     for c in df.columns:
         n = str(c).strip().lower()
@@ -58,7 +85,9 @@ def a_utc(serie, zona):
     elif t.str.fullmatch(r'\d{10,13}').all():
         f = pd.to_datetime(t.astype('int64'), unit='ms' if t.str.len().max() > 10 else 's', utc=True)
     else:
-        f = pd.to_datetime(t, errors='coerce', format='mixed')
+        # día primero si algún primer número pasa de 12 (31/01/2024, 26.10.2026)
+        pri = t.str.extract(r'^(\d{1,2})[/.\-]\d{1,2}[/.\-]\d{2,4}')[0].dropna().astype(int)
+        f = pd.to_datetime(t, errors='coerce', format='mixed', dayfirst=bool(len(pri) and (pri > 12).any()))
     if getattr(f.dt, 'tz', None) is None:
         if zona.upper() == 'EST':   # hora de Nueva York sin cambio de verano (HistData)
             f = f + pd.Timedelta(hours=5)
@@ -67,23 +96,62 @@ def a_utc(serie, zona):
     return f.dt.tz_convert('UTC')
 
 
-def esperadas(ini, fin, paso, mercado):
-    idx = pd.date_range(ini, fin, freq=paso, tz='UTC')
-    if mercado == 'cripto':
-        return idx
-    if mercado == 'forex':
-        ny = idx.tz_convert('America/New_York')
-        dia, hora = ny.dayofweek, ny.hour
-        abierto = ~((dia == 5) | ((dia == 4) & (hora >= 17)) | ((dia == 6) & (hora < 17)))
-        return idx[abierto]
-    ny = idx.tz_convert('America/New_York')
-    return idx[ny.dayofweek < 5]
+def calendario(fechas, temporalidad):
+    """Aprende el horario del activo a partir de sus propias velas.
+    Devuelve (faltan_reales, dias_sin_sesion, n_esperadas, descripción del horario)."""
+    f = pd.DatetimeIndex(fechas)
+    cripto = (f.dayofweek >= 5).mean() > 0.2           # muchas velas en fin de semana: 24/7
+    loc = f.tz_convert('UTC' if cripto else 'America/New_York')
+    semanas = max(1, loc.tz_localize(None).to_period('W').nunique())
+    if temporalidad == '1d':
+        # vela diaria: su fecha es el día de sesión, tal como viene (sin cambiar de zona)
+        dias = pd.DatetimeIndex(f.tz_convert('UTC').normalize().tz_localize(None).unique())
+        normales = {d for d in range(7) if (dias.dayofweek == d).sum() >= 0.5 * semanas}
+        exp = pd.date_range(dias.min(), dias.max(), freq='D')
+        exp = exp[exp.dayofweek.isin(list(normales))]
+        faltan = exp.difference(dias)
+        # un día suelto que falta = festivo o cierre; 3 o más seguidos = hueco real
+        s = pd.Series(1, index=faltan).reindex(exp, fill_value=0)
+        grupo = (s != s.shift()).cumsum()
+        largo = s.groupby(grupo).transform('sum') * s
+        reales = faltan[(largo.loc[faltan] >= 3).values] if len(faltan) else faltan
+        festivos = faltan.difference(reales)
+        txt = 'días con sesión: ' + ', '.join('lun mar mié jue vie sáb dom'.split()[d] for d in sorted(normales))
+        return reales, festivos, len(exp), txt
+    paso = PASO[temporalidad]
+    slot = loc.dayofweek * 1440 + loc.hour * 60 + loc.minute
+    cuenta = pd.Series(slot).value_counts()
+    normales = set(cuenta[cuenta >= 0.5 * semanas].index)
+    tz = 'UTC' if cripto else 'America/New_York'
+    rango = pd.date_range(f.min(), f.max(), freq=paso, tz='UTC')
+    rl = rango.tz_convert(tz)
+    exp = rango[pd.Index(rl.dayofweek * 1440 + rl.hour * 60 + rl.minute).isin(normales)]
+    faltan = exp.difference(f)
+    if len(faltan):
+        dia_f = pd.Series(faltan.tz_convert(tz).normalize().tz_localize(None))
+        dia_e = pd.Series(exp.tz_convert(tz).normalize().tz_localize(None)).value_counts().sort_index()
+        por_dia = dia_f.value_counts()
+        enteros = por_dia[por_dia >= dia_e.reindex(por_dia.index).values].index
+        # día entero suelto = festivo o cierre; 3 o más días con sesión seguidos sin datos = hueco real
+        s = pd.Series(dia_e.index.isin(enteros).astype(int), index=dia_e.index)
+        grupo = (s != s.shift()).cumsum()
+        largo = s.groupby(grupo).transform('sum') * s
+        fest = set(largo[(largo > 0) & (largo < 3)].index)
+        es_fest = dia_f.isin(fest).values
+        festivos = pd.DatetimeIndex(sorted(fest))
+        reales = faltan[~es_fest]
+        n_exp = len(exp) - int(es_fest.sum())
+    else:
+        reales, festivos, n_exp = faltan, pd.DatetimeIndex([]), len(exp)
+    horas = sorted({(x % 1440) // 60 for x in normales})
+    txt = '24/7' if cripto and len(horas) == 24 else f'{len(horas)} de 24 horas con sesión (hora de {"UTC" if cripto else "Nueva York"})'
+    return reales, festivos, n_exp, txt
 
 
 def main():
     a = argparse.ArgumentParser()
     a.add_argument('crudo')
-    a.add_argument('--mercado', required=True, choices=['cripto', 'forex', 'bolsa'])
+    a.add_argument('--mercado', default='auto', help='opcional e informativo: el calendario se aprende de los datos')
     a.add_argument('--temporalidad', required=True, choices=list(PASO))
     a.add_argument('--zona', default='UTC')
     a.add_argument('--salida', required=True)
@@ -94,7 +162,7 @@ def main():
     n0 = len(df)
     df['fecha'] = a_utc(df['fecha'], o.zona)
     for c in ('open', 'high', 'low', 'close', 'volume'):
-        df[c] = pd.to_numeric(df[c], errors='coerce')
+        df[c] = numero(df[c])
 
     sin_fecha = int(df['fecha'].isna().sum())
     df = df.dropna(subset=['fecha']).sort_values('fecha')
@@ -116,24 +184,7 @@ def main():
     mad = (r - r.median()).abs().median() * 1.4826
     saltos = df.loc[(r - r.median()).abs() > 8 * mad, 'fecha'] if mad > 0 else df['fecha'].iloc[:0]
 
-    paso = PASO[o.temporalidad]
-    if o.temporalidad == '1d':
-        dias = df['fecha'].dt.tz_convert('America/New_York').dt.normalize() if o.mercado != 'cripto' else df['fecha'].dt.normalize()
-        tiene = pd.DatetimeIndex(dias.dt.tz_localize(None).unique())
-        exp = pd.date_range(tiene.min(), tiene.max(), freq='D')
-        exp = exp if o.mercado == 'cripto' else exp[exp.dayofweek < 5]
-        faltan = exp.difference(tiene)
-    elif o.mercado == 'bolsa':
-        # intradía de bolsa: huecos solo dentro de cada día con datos (no se conocen festivos ni sesiones)
-        faltan = []
-        for _, g in df.groupby(df['fecha'].dt.tz_convert('America/New_York').dt.date):
-            exp = pd.date_range(g['fecha'].min(), g['fecha'].max(), freq=paso)
-            faltan += list(exp.difference(pd.DatetimeIndex(g['fecha'])))
-        faltan, exp = pd.DatetimeIndex(faltan), None
-    else:
-        exp = esperadas(df['fecha'].min(), df['fecha'].max(), paso, o.mercado)
-        faltan = exp.difference(pd.DatetimeIndex(df['fecha']))
-    n_esp = len(df) + len(faltan)
+    faltan, festivos, n_esp, horario = calendario(df['fecha'], o.temporalidad)
     p_huecos = len(faltan) / n_esp if n_esp else 0
 
     vol = df['volume']
@@ -148,8 +199,7 @@ def main():
     if dup_distintas: avisos.append(f'{dup_distintas} velas con la misma fecha y precios distintos: se dejó la primera.')
     if n_imp: avisos.append(f'{n_imp} velas imposibles (precio vacío, cero o máximo/mínimo incoherente), eliminadas.')
     if len(saltos): avisos.append(f'{len(saltos)} saltos fuera de lo normal: revísalos en el gráfico (pueden ser reales).')
-    if len(faltan): avisos.append(f'{len(faltan)} velas faltantes ({p_huecos:.1%}). No se rellenaron.'
-                                  + (' En bolsa diaria pueden ser festivos.' if o.mercado == 'bolsa' and o.temporalidad == '1d' else ''))
+    if len(faltan): avisos.append(f'{len(faltan)} velas faltantes dentro del horario del activo ({p_huecos:.1%}). No se rellenaron.')
     if sin_vol: avisos.append('La fuente no trae volumen: la columna queda vacía. No uses reglas de volumen.')
     elif vol_cero > 0.2: avisos.append(f'{vol_cero:.0%} de las velas con volumen 0: no uses reglas de volumen.')
     if anios < MIN_ANIOS_APTA: avisos.append(f'Solo {anios:.1f} años de historia: el 30 % fuera de muestra queda corto.')
@@ -167,17 +217,21 @@ def main():
 
     L = [f'# Calidad de datos · {o.salida}', '',
          f'Veredicto: **{veredicto}** para backtest', '',
-         f'- Origen: {o.crudo} · mercado {o.mercado} · temporalidad {o.temporalidad} · zona original {o.zona}',
+         f'- Origen: {o.crudo} · temporalidad {o.temporalidad} · zona original {o.zona}',
          f'- Desde {df["fecha"].min():%Y-%m-%d %H:%M} hasta {df["fecha"].max():%Y-%m-%d %H:%M} UTC · {anios:.1f} años',
          f'- Velas: {n0} en el crudo → {len(df)} curadas ({eliminadas:.1%} eliminadas)',
-         f'- Velas faltantes: {len(faltan)} ({p_huecos:.1%})',
+         f'- Horario aprendido de los datos: {horario}',
+         f'- Velas faltantes dentro del horario: {len(faltan)} ({p_huecos:.1%})',
+         f'- Días sin sesión (festivos o cierres, normal: no cuentan como hueco): {len(festivos)}',
          f'- Volumen: {"no viene" if sin_vol else f"{vol_cero:.0%} en cero"}', '',
          '## Avisos'] + ([f'- {x}' for x in avisos] or ['- Ninguno.'])
     if len(saltos):
         L += ['', '## Saltos para revisar (primeros 10)'] + [f'- {f:%Y-%m-%d %H:%M} UTC' for f in list(saltos)[:10]]
     if len(faltan):
         L += ['', '## Velas faltantes (primeras 10)'] + [f'- {pd.Timestamp(f):%Y-%m-%d %H:%M}' for f in list(faltan)[:10]]
-    L += ['', 'Umbrales provisionales del Reto: NO APTA si se eliminó más del 5 %, faltan más del 5 % de las velas,',
+    if len(festivos):
+        L += ['', '## Días sin sesión (primeros 10)'] + [f'- {pd.Timestamp(f):%Y-%m-%d}' for f in list(festivos)[:10]]
+    L += ['', 'Umbrales provisionales del Reto: NO APTA si se eliminó más del 5 %, faltan más del 5 % de las velas dentro del horario del activo,',
           'hay menos de 1 año o menos de 100 velas. Datos gratuitos: buenos para investigar, no iguales a datos de pago.']
     open(o.informe, 'w', encoding='utf-8').write('\n'.join(L) + '\n')
     print('\n'.join(L))

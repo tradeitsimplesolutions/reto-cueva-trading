@@ -9,9 +9,14 @@ error, lee el mensaje, revisa su documentación y corrige; no inventes funciones
 | Yahoo Finance (`yfinance`) | acciones, ETF, índices, cripto, algunas divisas | no | sí (acciones y cripto) | 1 h: últimos ~730 días · 15 min o menos: últimos ~60 días · 1 min: ~30 días |
 | Alpaca (`alpaca-py`) | acciones de EE. UU. y cripto | cripto no · acciones sí (claves gratis) | sí | acciones: con el plan gratis puede pedir `feed=DataFeed.IEX` |
 | Dukascopy (`dukascopy-python`) | forex, metales, índices CFD, algunas cripto | no | de ticks (actividad del bróker, no volumen real del mercado) | precios bid o ask, elige uno y dilo |
+| MetaTrader 5 (`MetaTrader5`) | lo que ofrezca TU bróker | tu cuenta (demo sirve) | de ticks | solo Windows, con MT5 abierto · hora del servidor del bróker |
+| Binance (`ccxt`) | cripto | no | sí | precios de Binance, no de otros exchanges |
+| Tu propio CSV | cualquiera | — | según la fuente | TradingView, Investing, MT5 exportado: pásalo directo por `curar.py` |
 | HistData (`histdata`) | forex, algunos índices y petróleo | no | no (siempre 0) | solo 1 minuto · hora de Nueva York SIN cambio de verano (`--zona EST`) · un archivo por mes |
 
-Instalar lo que se use: `pip install yfinance alpaca-py dukascopy-python histdata pandas`
+Instalar lo que se use: `pip install yfinance alpaca-py dukascopy-python histdata pandas` (+ `MetaTrader5` o `ccxt` si hacen falta)
+
+La lista no es cerrada: si el trader trae otra fuente, úsala con su librería oficial o su API documentada.
 
 ## Yahoo Finance
 ```python
@@ -86,3 +91,41 @@ download_hist_data(year="2026", month="9", pair="eurusd", time_frame="M1", platf
   `curar.py` los reconoce.
 - Siempre `--zona EST` al curar (hora de Nueva York sin cambio de verano).
 - Para otras temporalidades, primero cura en 1 minuto y después agrupa (resample) a la que necesites.
+
+## MetaTrader 5 (los datos de tu bróker)
+Lo más fiel: es el precio, el horario y el instrumento que vas a operar. Solo en Windows, con MT5 abierto y con sesión iniciada.
+```python
+from datetime import datetime
+import pandas as pd, MetaTrader5 as mt5
+mt5.initialize()
+r = mt5.copy_rates_range("XAUUSD", mt5.TIMEFRAME_H1, datetime(2020, 1, 1), datetime.now())
+mt5.shutdown()
+df = pd.DataFrame(r); df["time"] = pd.to_datetime(df["time"], unit="s")
+df.rename(columns={"tick_volume": "volume"})[["time", "open", "high", "low", "close", "volume"]] \
+  .to_csv("datos/crudos/xauusd_1h_mt5.csv", index=False)
+```
+- El símbolo, exacto como sale en tu Observación de mercado. Si devuelve vacío, abre el gráfico de ese símbolo en MT5 para que baje el historial.
+- Las fechas vienen en la HORA DEL SERVIDOR del bróker (muchos usan GMT+2/+3). Pregúntale al trader cuál es y pásala en `--zona` (por ejemplo `Europe/Athens` para GMT+2 con horario de verano).
+
+## Binance (cripto)
+```python
+import ccxt, pandas as pd
+ex = ccxt.binance(); filas, desde = [], ex.parse8601("2020-01-01T00:00:00Z")
+while True:
+    v = ex.fetch_ohlcv("BTC/USDT", "1h", since=desde, limit=1000)
+    if not v: break
+    filas += v; desde = v[-1][0] + 1
+    if len(v) < 1000: break
+pd.DataFrame(filas, columns=["time", "open", "high", "low", "close", "volume"]) \
+  .to_csv("datos/crudos/btc-usdt_1h_binance.csv", index=False)
+```
+- Sin claves. Fechas en UTC (milisegundos): `curar.py` las reconoce.
+
+## Investing.com y otras webs sin API
+No tienen librería fiable: el trader descarga el CSV a mano (en Investing: Datos históricos → elige fechas y temporalidad → Descargar; pide cuenta gratis).
+`curar.py` entiende sus columnas en español (Fecha, Último, Apertura, Máximo, Mínimo, Vol.), los números con coma decimal y las fechas día/mes/año.
+
+## Tu propio CSV (TradingView, MT5 exportado, cualquier otra)
+Guárdalo en `datos/crudos/` y pásalo por `curar.py`. Reconoce los encabezados más comunes (en inglés, español
+y portugués), las columnas de MetaTrader (<DATE> <TIME> <OPEN>…), las fechas UNIX de TradingView y los
+números con formato de Excel. Si no reconoce una columna, te dice cuál falta.
