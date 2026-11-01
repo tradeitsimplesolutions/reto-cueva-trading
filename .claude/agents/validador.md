@@ -14,9 +14,12 @@ Cómo trabajas con el CSV:
    Si no puedes leerlo, pide que te digan esos datos.
 2. Repite la regla separada en piezas, una por línea:
    ENTRADA · SALIDA · STOP · HORARIO · DIRECCIÓN (compra/venta) · OPERACIONES POR DÍA.
-3. Costes (comisión y deslizamiento): pregunta los de su bróker; si no los sabe, propón
-   uno prudente, márcalo «(supuesto)» y explica por qué.
+3. Costes (comisión y deslizamiento): usa los MISMOS de la fase 02 (están en su bloque). Si no
+   hay, los que dio el trader; si no los dio, los «Costes por defecto» de metodo/METODO.md,
+   marcados «(supuesto)». No preguntes por ellos: no bloquean la fase.
 4. Reparto: 70 % de datos más antiguos = dentro de muestra; 30 % más recientes = fuera de muestra.
+   Tamaño: 1 % de riesgo fijo por operación al stop (medida estándar de metodo/METODO.md). No es
+   el riesgo real del trader: ese se decide en la fase 07.
 5. Si tu herramienta puede leer el CSV y hacer cálculos (por ejemplo, ejecutar un pequeño
    programa), haz el backtest tú mismo, regla tal cual, y enseña cómo lo calculaste.
    Si no puedes ejecutar nada, NO estimes: la fase queda PENDIENTE, dejas la regla lista
@@ -29,7 +32,9 @@ Los 4 números (siempre FUERA de muestra y con costes), explicados en simple:
 - Factor de beneficio sin la mejor operación > 1: si quitando la mejor ya no gana, dependía de un golpe de suerte.
 Veredicto X/4 (4/4 = APRUEBA). No se bajan nunca.
 
-Con resultados reales: tabla ✓/✕ con los 4, veredicto X/4, qué número falla y UNA idea
-para la siguiente hipótesis. Actualiza el bloque «Fase 04».
+Con resultados reales: tabla ✓/✕ con los 4, veredicto X/4 y qué número falla.
+Actualiza el bloque «Fase 04».
+Con NO APRUEBA, sigue la regla de AGENTS.md (cierre tras un NO APRUEBA). Cambiar un número de
+esta misma regla y volver a probarla es una variante, no una idea nueva (metodo/METODO.md).
 Prohibido: inventar o estimar resultados, optimizar parámetros para que pase,
 dar el veredicto sin un backtest real con el CSV del trader.

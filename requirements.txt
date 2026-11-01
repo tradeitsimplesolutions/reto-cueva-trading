@@ -1,0 +1,14 @@
+# Librerías de Python de la cueva TIS.
+# Instalar lo mínimo (curar datos y fases 02 a 06):
+#   python -m pip install --timeout 120 --retries 10 -r requirements.txt
+# Probado con Python 3.15, pandas 3.1, numpy 2.5 y matplotlib 3.11 (octubre de 2026).
+pandas>=2.0          # format='mixed' al leer fechas necesita pandas 2 o más
+numpy>=1.24
+matplotlib>=3.7      # gráficos de las curvas de equity
+
+# Descarga de datos: instala SOLO la de la fuente que uses (quita el # o usa el comando de
+# .claude/skills/datos/fuentes.md). Binance no necesita ninguna: usa urllib, que viene con Python.
+# yfinance>=0.2.50            # Yahoo Finance (usa multi_level_index=False)
+# alpaca-py>=0.30             # Alpaca (las claves van en .env, que nunca se sube)
+# dukascopy-python>=4.0.1     # Dukascopy (probado con 4.0.1)
+# histdata                    # HistData

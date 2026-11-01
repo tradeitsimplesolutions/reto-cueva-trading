@@ -6,7 +6,7 @@
 
 Haz el test de la guía de niveles del Día 1 y apunta tus dos números.
 
-| | Sistemático (1 a 5) | IA (0 a 5) |
+| | Sistemático (0 a 5) | IA (0 a 5) |
 |---|---|---|
 | Domingo 25 · al empezar | | |
 | Jueves 29 · al terminar | | |
@@ -21,7 +21,7 @@ El resumen que te deja `/auditor` después de pasar tu historial por el Auditor 
 
 ## Mi idea para el Reto
 
-La hipótesis que eliges de tu auditoría, o una idea tuya en una frase: qué activo, qué pasa y qué crees que hace el precio después. Mañana se trabaja.
+La hipótesis que eliges de tu auditoría, o una idea tuya en una frase: qué activo, qué pasa y qué crees que hace el precio después. Se trabaja en la fase 01 cuando quieras (en el Reto, el Día 2).
 
 > 
 
@@ -39,6 +39,7 @@ Pídele estas tres cosas y anota en una línea qué te respondió y si respetó 
 - [ ] Abierta en VS Code
 - [ ] Claude Code (o mi IA) funcionando dentro de la carpeta
 - [ ] Primer uso hecho (`/primer-uso`) y mis niveles escritos arriba
+- [ ] Mi plan de trader en `MI_PLAN.md` (`/objetivos`)
 - [ ] Guardado en GitHub
 
 **Nivel 2 · Audítate**
@@ -72,7 +73,6 @@ Pídele estas tres cosas y anota en una línea qué te respondió y si respetó 
 - [ ] Misión 2 entregada en el buzón «Entrega Misión 2»
 
 ## Día 3 · Backtesting y código
-- [ ] Mi plan de trader en `MI_PLAN.md` (`/objetivos`; mejor si lo haces antes de tu primera idea)
 - [ ] Mis datos curados en `datos/` con su informe de calidad (`/datos`)
 - [ ] Mi backtest en `codigo/`
 - [ ] Mi primera curva de equity en `resultados/`

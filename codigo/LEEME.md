@@ -1,7 +1,10 @@
-# codigo/ · Día 3 · el código de tu backtest
+# codigo/ · el código de tu cueva
 
-Aquí guardará tu IA el programa que prueba tu regla con tus datos (fase 04 del método).
-Se abre el **Día 3 · Backtesting y código**. Hasta entonces, déjala vacía.
+Aquí guarda tu IA los programas que trabajan con tus datos. No tienes que escribirlos tú.
+
+- `<ficha>_aed.py` → la fase 02 (AED), desde el **Día 2**.
+- `<ficha>.py` → el backtest de la fase 04, desde el **Día 3 · Backtesting y código**.
+- `descargar_<activo>_<temporalidad>_<fuente>.py` → los deja el agente datos al bajar tus precios.
 
 - Un archivo por idea, con el mismo nombre que su ficha: `fichas/nas100_ruptura_ny.md` → `codigo/nas100_ruptura_ny.py`.
 - El código prueba la regla **tal como está escrita** en la ficha, con costes y con el reparto 70 % / 30 %.
