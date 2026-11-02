@@ -21,7 +21,7 @@ El resumen que te deja `/auditor` después de pasar tu historial por el Auditor 
 
 ## Mi idea para el Reto
 
-La hipótesis que eliges de tu auditoría, o una idea tuya en una frase: qué activo, qué pasa y qué crees que hace el precio después. Se trabaja en la fase 01 cuando quieras (en el Reto, el Día 2).
+La idea que eliges de tu auditoría, o una idea tuya en una frase: qué activo, qué pasa y qué crees que hace el precio después. Si no tienes idea, no pasa nada: el AED (fase 01) escucha a tu activo y te da pistas. Primero se mide en la fase 01 (AED) y después se escribe la hipótesis completa en la fase 02 (en el Reto, el Día 2).
 
 > 
 
@@ -53,21 +53,21 @@ Pídele estas tres cosas y anota en una línea qué te respondió y si respetó 
 - [ ] Misión 1 entregada en el buzón «Entrega Misión 1»
 
 ## Día 2 · Pensando en datos
-**Nivel 1 · Tu hipótesis, sellada**
-- [ ] Mi hipótesis sellada en la lección «Tu hipótesis», con su pre-registro
-- [ ] Mi ficha en `fichas/`, con el pre-registro y el veredicto de la fase 01
+**Nivel 1 · Escucha a tu activo (fase 01 · AED)**
+- [ ] El CSV de mi activo en `datos/`
+- [ ] La ficha técnica de mi activo en `activos/`, con sus pistas
+- [ ] Si traigo una idea: escrita (y sellada con su pre-registro) antes de mirar los datos
+- [ ] Mi idea o mi pista medida frente a la línea base: fase 01 con su veredicto en mi ficha
 - [ ] Guardado en GitHub
 
-**Nivel 2 · Contrástala con los datos**
-- [ ] El CSV de mi activo en `datos/`
-- [ ] La ficha técnica de mi activo en `activos/`
-- [ ] Mi predicción medida frente a mi línea base
+**Nivel 2 · Tu hipótesis (fase 02)**
+- [ ] La regla completa (activo, entrada, salida, stop y horario) y su porqué, con lo que dijo el AED
 - [ ] Fase 02 con su veredicto en mi ficha
 - [ ] Guardado en GitHub
 
 **Nivel 3 · Busca su huella**
 - [ ] El segundo juego de datos en `datos/`
-- [ ] La huella medida y anotada en la fase 02
+- [ ] La huella medida y anotada en la fase 01
 - [ ] Guardado en GitHub
 
 - [ ] Misión 2 entregada en el buzón «Entrega Misión 2»

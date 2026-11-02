@@ -10,14 +10,24 @@ Cada fase deja su bloque en la FICHA (`metodo/plantillas/FICHA.md`) con un vered
 
 | Fase | Qué responde | Tipo | Quién en la cueva |
 |---|---|---|---|
-| 01 Hipótesis | ¿Qué comportamiento explota y por qué existiría la ventaja? | CRITERIO | agente hipotesis + skill escritor-hipotesis |
-| 02 AED | ¿Hay ventaja en los datos o es ruido? (AED = análisis exploratorio de datos) | CRITERIO + DATOS | Director + skill aed |
+| 01 AED | ¿Qué hace el activo y el comportamiento que quieres explotar es ventaja o ruido? (AED = análisis exploratorio de datos) | CRITERIO + DATOS | Director + skill aed |
+| 02 Hipótesis | ¿Qué regla explota ese comportamiento y por qué existiría la ventaja? | CRITERIO | agente hipotesis + skill escritor-hipotesis |
 | 03 Reglas | ¿La regla está escrita sin una sola duda? (pseudocódigo) | MOTOR | agente reglas |
 | 04 Backtest | ¿Pasa los 4 números fuera de muestra, con costes? | MOTOR | agente validador + skill validador-4de4 |
 | 05 Optimización | ¿Funciona en una meseta de parámetros, no en un pico? | MOTOR | Director + skill optimizar |
 | 06 Robustez | ¿Aguanta costes ×2, Monte Carlo y años malos? | MOTOR | Director + skill robustez |
 | 07 Tamaño y riesgo | ¿Cuánto riesgo merece? | CRITERIO | tú |
 | 08 Puesta en marcha | Demo, servidor, seguimiento | DOCUMENTACIÓN | (se construye en el Reto) |
+
+**Por qué el AED va primero.** Primero se escucha al activo y después viene la idea: como en el
+médico, primero los exámenes y después el diagnóstico. Hay dos caminos y los dos empiezan en la 01:
+- **Sin idea (lo normal):** el AED explora el activo (quién es, cómo se comporta, lo que cuesta) y
+  deja pistas. El trader elige una pista y esa es la que se mide en la 01.
+- **Con idea:** el trader la escribe en una frase ANTES de mirar los datos (mejor con pre-registro)
+  y el AED la confirma o la descarta.
+En los dos casos, la hipótesis completa (fase 02) se escribe con lo que dijo el AED. Única
+excepción: si el trader trajo su idea escrita y la 01 queda PENDIENTE por falta de datos, se
+pueden adelantar las fases 02 y 03; la 04 nunca aprueba sin la 01.
 
 **Los tres tipos de fase**
 - **CRITERIO**: lo decides tú; la IA te ordena las ideas y te pregunta.
@@ -28,8 +38,8 @@ Cada fase deja su bloque en la FICHA (`metodo/plantillas/FICHA.md`) con un vered
 
 | Fase | Aprueba si |
 |---|---|
-| 01 Hipótesis | La regla tiene activo, entrada, salida, stop y horario medibles, y un porqué escrito (ineficiencia o prima de riesgo). Si el porqué lo propuso la IA, el trader lo confirma o lo cambia antes de la fase 04. |
-| 02 AED | Con un CSV real y solo en el 70 % más antiguo: con pre-registro, cumple lo que escribió el trader. Sin pre-registro, cumple las 4 condiciones de abajo. Sin CSV: PENDIENTE. |
+| 01 AED | Con un CSV real y solo en el 70 % más antiguo, el comportamiento que se va a explotar (la idea del trader o la pista que eligió) no es ruido: con pre-registro, cumple lo que escribió el trader; sin pre-registro, cumple las 4 condiciones de abajo. Sin CSV: PENDIENTE. |
+| 02 Hipótesis | La regla que explota ese comportamiento tiene activo, entrada, salida, stop y horario medibles, y un porqué escrito (ineficiencia o prima de riesgo). Si el porqué lo propuso la IA, el trader lo confirma o lo cambia antes de la fase 04. |
 | 03 Reglas | Pseudocódigo completo: dos personas marcarían las mismas operaciones. Supuestos declarados, ninguno «por definir». |
 | 04 Backtest | 4/4 en los 4 números (abajo), fuera de muestra y con costes. |
 | 05 Optimización | Meseta: dentro de muestra, todos los vecinos inmediatos tienen factor de beneficio ≥ 1,3, al menos 30 operaciones y conservan al menos el 70 % del factor de beneficio elegido. Y los 4 números siguen 4/4 fuera de muestra. (Provisional del Reto.) |
@@ -40,12 +50,12 @@ Cada fase deja su bloque en la FICHA (`metodo/plantillas/FICHA.md`) con un vered
 Mientras un umbral diga «se fija en el Reto», esa fase no se puede aprobar: queda PENDIENTE.
 Los umbrales «provisionales del Reto» sí se aplican: puedes cambiarlos aquí, nunca para que algo pase.
 
-**Fase 02 sin pre-registro · las 4 condiciones** (solo con el 70 % más antiguo; el 30 % se guarda para la fase 04):
+**Fase 01 sin pre-registro · las 4 condiciones** (solo con el 70 % más antiguo; el 30 % se guarda para la fase 04):
 1. **Casos:** al menos 30 casos SIN SOLAPARSE: después de un caso, las velas de su horizonte no
    cuentan como casos nuevos (como «una operación a la vez»). Se excluyen los casos cuyo horizonte
    cruza el corte 70/30.
 2. **Ventaja:** el retorno medio de cierre a cierre después de la condición, al horizonte que dice
-   la hipótesis (si no lo dice, 20 velas), supera al de cualquier vela en más que el coste de ida y
+   la idea (si no lo dice, 20 velas), supera al de cualquier vela en más que el coste de ida y
    vuelta (comisión + deslizamiento de las dos puntas: los «Costes por defecto» de abajo). Sin stop:
    la AED mide el comportamiento, no la regla. Si la salida es a una hora fija, el horizonte va hasta
    esa hora y «cualquier vela» son las velas de la misma hora de entrada en todos los días.
@@ -57,21 +67,21 @@ Los umbrales «provisionales del Reto» sí se aplican: puedes cambiarlos aquí,
 Con 4/4, APRUEBA. Si falla una, NO APRUEBA y se dice cuál.
 Aprobar la fase 04 no hace a una estrategia «validada»: le faltan las fases 05 a 08.
 
-**Costes por defecto (fases 02 a 06).** Si el trader no da los de su bróker, NO se le pregunta:
+**Costes por defecto (fases 01 y 04 a 06).** Si el trader no da los de su bróker, NO se le pregunta:
 se usan los de activos/<activo>.md si existe y, si no, estos, marcados «(supuesto)»:
 cripto 0,10 % por lado · oro y plata 0,02 % por lado · índices 0,02 % por lado · acciones y ETF
 0,02 % por lado · forex 1 pip por lado. «Por lado» = al entrar y otra vez al salir (comisión +
 deslizamiento). Son estimaciones prudentes del Reto, no los costes de un bróker concreto.
-Los mismos costes en la fase 02 y en la 04.
+Los mismos costes en la fase 01 y en la 04.
 
-**Indicadores por defecto (fases 02 a 06).** Si la regla no dice cómo se calcula un indicador,
+**Indicadores por defecto (todas las fases).** Si la regla no dice cómo se calcula un indicador,
 se usa el estándar de TradingView y MetaTrader, sin preguntar y sin elegir otro:
 ATR (rango medio de las velas) = el de Wilder, 14 velas · media = simple · RSI = Wilder, 14 ·
 «el máximo / mínimo de N velas» = de las N velas ANTERIORES, sin la actual · todo se calcula al
 cierre de la vela. Si el trader dice otra cosa, manda lo suyo. Lo que cambia la entrada, la
 salida o el stop nunca lo decide la IA: o lo dice la regla, o el estándar de aquí.
 
-**Medidas exactas de la fase 02.** «Cualquier vela» = todas las velas del 70 % con horizonte
+**Medidas exactas de la fase 01.** «Cualquier vela» = todas las velas del 70 % con horizonte
 completo dentro del 70 %, incluidas las de la señal. «Velas válidas» del placebo = esas mismas.
 Si la idea tiene una condición Y una ventana horaria (por ejemplo, «si rompe el rango asiático,
 entre 07:00 y 10:00»), «cualquier vela» y el placebo usan solo las velas de esa misma ventana,
@@ -79,7 +89,7 @@ con el mismo horizonte o la misma hora de salida: se compara con «entrar a esa 
 Si la idea ES el horario (por ejemplo, «comprar a las 16:00 y salir a las 20:00»), se compara con
 entrar a cualquier otra hora y mantener la misma duración: «cualquier vela» y el placebo son todas
 las velas del 70 %, con el mismo número de velas de horizonte.
-Cada ficha anota en «Supuestos» de la fase 02 cuántas ideas se han probado ya sobre ese CSV:
+Cada ficha anota en «Supuestos» de la fase 01 cuántas ideas se han probado ya sobre ese CSV:
 cuantas más, más fácil que una pase por suerte.
 
 **Otra temporalidad.** Si la regla usa velas más grandes que las del CSV (por ejemplo, 4 h con un

@@ -19,5 +19,5 @@ Prohibido:
 - añadir filtros, indicadores, salidas o parámetros que la regla no tiene;
 - cambiar la lógica para que compile o para que «se vea mejor» en el gráfico;
 - usar datos de una vela que todavía no cerró para decidir (mirar el futuro);
-- inventar resultados o decir si la estrategia es buena: eso lo miden las fases 02 a 06;
+- inventar resultados o decir si la estrategia es buena: eso lo miden las fases 01 a 06;
 - pedir o escribir números de cuenta, contraseñas o claves.

@@ -185,7 +185,7 @@ Cuando cambie tu capital, tu tiempo o tu objetivo, o cada 3 meses: /objetivos
 ```
 
 ## Cómo lo usa el Director después
-- Fase 01: si una idea no encaja con MI_PLAN.md (frecuencia, horario, mercado, lo que no hace),
+- Fases 01 y 02: si una idea no encaja con MI_PLAN.md (frecuencia, horario, mercado, lo que no hace),
   avisa en una línea antes de seguir. El trader decide.
 - Fase 04: los 4 números no se bajan nunca. El backtest se mide al 1 % de riesgo (estándar).
   Llévalo a su riesgo: caída con su riesgo ≈ caída del backtest × (su riesgo ÷ 1 %). Si eso

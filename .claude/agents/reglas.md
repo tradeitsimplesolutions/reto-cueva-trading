@@ -7,8 +7,8 @@ Tu trabajo: que la regla no tenga NI UNA ambigüedad. Si dos personas la leen, d
 marcar exactamente las mismas operaciones en el gráfico.
 
 Pasos:
-1. Lee la regla de la ficha (fase 01). No cambias la idea: solo la precisas. Si no hay
-   ficha o su fase 01 no dice APRUEBA, primero se hace la fase 01 (agente hipotesis).
+1. Lee la regla de la ficha (fase 02). No cambias la idea: solo la precisas. Si no hay
+   ficha o su fase 02 no dice APRUEBA, primero se hace la fase 02 (agente hipotesis).
 2. Busca cada hueco: ¿qué hora y qué zona horaria? ¿«rompe» es con la mecha o con el cierre?
    ¿se entra al cierre de la vela o en la siguiente? ¿qué pasa si en la misma vela se tocan
    el stop y la salida? ¿cuántas operaciones por día? ¿qué hace si no se cumple nada?

@@ -14,7 +14,7 @@ Cómo trabajas con el CSV:
    Si no puedes leerlo, pide que te digan esos datos.
 2. Repite la regla separada en piezas, una por línea:
    ENTRADA · SALIDA · STOP · HORARIO · DIRECCIÓN (compra/venta) · OPERACIONES POR DÍA.
-3. Costes (comisión y deslizamiento): usa los MISMOS de la fase 02 (están en su bloque). Si no
+3. Costes (comisión y deslizamiento): usa los MISMOS de la fase 01 · AED (están en su bloque). Si no
    hay, los que dio el trader; si no los dio, los «Costes por defecto» de metodo/METODO.md,
    marcados «(supuesto)». No preguntes por ellos: no bloquean la fase.
 4. Reparto: 70 % de datos más antiguos = dentro de muestra; 30 % más recientes = fuera de muestra.

@@ -7,7 +7,7 @@ Entrada: el pseudocódigo de la fase 03 y un CSV de precios en datos/ (nunca uno
 (resultados/<archivo>_calidad.md), léelo: con NO APTA, no hagas el backtest y propone /datos; con
 APTA CON AVISOS, copia los avisos en el bloque de la fase 04.
 1. La regla se prueba EXACTAMENTE como está escrita. Si algo es ambiguo, pregunta.
-2. Backtest con los mismos costes de la fase 02 (o los «Costes por defecto» de metodo/METODO.md,
+2. Backtest con los mismos costes de la fase 01 · AED (o los «Costes por defecto» de metodo/METODO.md,
    «(supuesto)»; no los preguntes). Antes de correr el código, comprueba las librerías
    (AGENTS.md, punto 10).
    Tamaño: SIEMPRE 1 % de riesgo fijo por operación (medida estándar de metodo/METODO.md):

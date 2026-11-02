@@ -1,6 +1,6 @@
 # datos/ · Aquí van tus CSV de precios
 
-La cueva no tiene datos de mercado propios. Sin un CSV tuyo, la fase 02 (AED) y la
+La cueva no tiene datos de mercado propios. Sin un CSV tuyo, la fase 01 (AED) y la
 fase 04 (Backtest) quedan PENDIENTE: es lo correcto, no un error.
 
 ## ¿De dónde saco los datos? Fuentes gratis

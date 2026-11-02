@@ -2,21 +2,21 @@
 Regla: Compro NAS100 cuando en las 2 primeras velas de 15 min tras la apertura de Nueva York rompe el máximo de la sesión anterior y, en las 8 velas siguientes, vuelve a tocar ese nivel y cierra por encima. Salgo cuando pierde el nivel o al cierre de la sesión. Stop: mínimo de la vela del retesteo. Horario: sesión de Nueva York, 9:30-16:00 (hora de Nueva York).
 Por qué funcionaría: la apertura concentra órdenes; si el precio supera el máximo de ayer y ese nivel aguanta al volver a probarlo, los vendedores que defendían el máximo se rinden y los que se quedaron fuera compran tarde (ineficiencia de horario). Pierde dinero quien vendió en el máximo esperando un rechazo. (propuesta, confírmala)
 
-## Fase 01 · Hipótesis · CRITERIO
+## Fase 01 · AED · CRITERIO + DATOS
+Agente / skill: director · aed
+Qué se hizo: el trader trajo la idea ya escrita, antes de mirar los datos (camino «con idea»: el AED la confirma o la descarta). No hay CSV en datos/; no se mide nada ni se inventan cifras.
+Resultado: falta el CSV de NAS100 en velas de 15 min (TradingView → Exportar datos del gráfico; ver datos/LEEME.md). Qué se va a medir: si los días que rompe el máximo de ayer en la apertura y lo retestea, el retorno hasta el cierre es claramente mayor que el de un día cualquiera a esa hora.
+Supuestos: ninguno.
+Veredicto: PENDIENTE (falta el CSV de NAS100 en 15 min, con al menos 1-2 años)
+Siguiente paso: bajar el CSV y repetir la fase 01; mientras tanto, se pueden escribir la hipótesis y las reglas (fases 02 y 03).
+
+## Fase 02 · Hipótesis · CRITERIO
 Agente / skill: hipotesis · escritor-hipotesis
-Qué se hizo: regla revisada campo a campo; todos ✅ medibles salvo «sesión anterior» y «rompe», que pasan a supuestos.
+Qué se hizo: regla revisada campo a campo con la idea de la fase 01; todos ✅ medibles salvo «sesión anterior» y «rompe», que pasan a supuestos.
 Resultado: hipótesis completa: activo, entrada, salida, stop y horario definidos; solo compras.
 Supuestos: sesión anterior = 9:30-16:00 de Nueva York del día hábil anterior; «rompe» = el máximo de la vela supera el nivel.
 Veredicto: APRUEBA
-Siguiente paso: fase 02, medir con datos si tras romper el máximo de ayer en la apertura el precio sigue subiendo más de lo normal.
-
-## Fase 02 · AED · CRITERIO + DATOS
-Agente / skill: director · aed
-Qué se hizo: no hay CSV en datos/; no se mide nada ni se inventan cifras.
-Resultado: falta el CSV de NAS100 en velas de 15 min (TradingView → Exportar datos del gráfico; ver datos/LEEME.md). Si la ventaja existe, esperaríamos que, los días que rompe y retestea, el retorno hasta el cierre sea claramente mayor que el de un día cualquiera a esa hora.
-Supuestos: ninguno.
-Veredicto: PENDIENTE (falta el CSV de NAS100 en 15 min, con al menos 1-2 años)
-Siguiente paso: bajar el CSV y repetir la fase 02; mientras tanto, la fase 03 puede escribir las reglas.
+Siguiente paso: fase 03, pasar la regla a pseudocódigo.
 
 ## Fase 03 · Reglas · MOTOR
 Agente / skill: reglas
@@ -24,7 +24,7 @@ Qué se hizo: la regla en español pasada a pseudocódigo paso a paso, sin códi
 Resultado: pseudocódigo sin huecos (abajo); 6 supuestos declarados.
 Supuestos: ver la lista debajo del pseudocódigo.
 Veredicto: APRUEBA
-Siguiente paso: fase 04 con el agente validador cuando la fase 02 tenga datos (tu CSV en datos/).
+Siguiente paso: fase 04 con el agente validador cuando la fase 01 tenga datos (tu CSV en datos/).
 
 ```
 DATOS: velas de 15 minutos de NAS100. Todas las horas en hora de Nueva York.

@@ -2,7 +2,7 @@
 
 Aquí guarda tu IA los programas que trabajan con tus datos. No tienes que escribirlos tú.
 
-- `<ficha>_aed.py` → la fase 02 (AED), desde el **Día 2**.
+- `<ficha>_aed.py` → la fase 01 (AED), desde el **Día 2**.
 - `<ficha>.py` → el backtest de la fase 04, desde el **Día 3 · Backtesting y código**.
 - `descargar_<activo>_<temporalidad>_<fuente>.py` → los deja el agente datos al bajar tus precios.
 

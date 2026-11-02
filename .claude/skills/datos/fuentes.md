@@ -17,7 +17,7 @@ error, lee el mensaje, revisa su documentación y corrige; no inventes funciones
 La lista no es cerrada: si el trader trae otra fuente, úsala con su librería oficial o su API documentada.
 
 Instalar (en Windows usa `python -m pip`: `pip` a secas a veces no existe):
-- Lo mínimo, para curar y para las fases 02 a 06:
+- Lo mínimo, para curar y para las fases 01 a 06:
   `python -m pip install --timeout 120 --retries 10 pandas numpy matplotlib`
 - Y solo la librería de la fuente que uses:
   Yahoo `python -m pip install --timeout 120 --retries 10 yfinance` ·

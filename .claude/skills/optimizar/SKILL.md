@@ -36,7 +36,7 @@ moverlos un poco todo se cae, era un pico y la ventaja es frágil.
    gana. Después corre UNA SOLA VEZ el fuera de muestra con esos parámetros y vuelve a mirar los
    4 números. Si ya no pasan 4/4, se quedan los parámetros de la fase 04.
 7. VEREDICTO: APRUEBA (meseta, y los 4 números siguen 4/4 fuera de muestra) · NO APRUEBA (pico:
-   la ventaja depende de un valor exacto; vuelve a la hipótesis) · NO SE HACE (la fase 04 dio
+   la ventaja depende de un valor exacto; vuelve a la fase 01 con una idea nueva, AGENTS.md, punto 2) · NO SE HACE (la fase 04 dio
    NO APRUEBA: no se escribe bloque de fase 05; se dice y se propone una idea nueva) · PENDIENTE (falta la fase 04
    aprobada o no puedes ejecutar código en este computador: no estimes nada).
 8. Escribe el bloque «Fase 05» con metodo/plantillas/FICHA.md. En «Resultado»: los parámetros y

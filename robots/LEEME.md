@@ -9,6 +9,6 @@ Por cada plataforma salen dos archivos con el nombre de la ficha:
 - `robots/nas100_ruptura_ny_pine_estrategia.pine` → opera y se prueba en la plataforma.
 - `robots/nas100_ruptura_ny_pine_indicador.pine` → solo dibuja entradas, salidas y stop.
 
-- Tener el código no valida la estrategia: eso lo hacen las fases 02 a 06.
+- Tener el código no valida la estrategia: eso lo hacen las fases 01 a 06.
 - Primero se prueba en **cuenta demo**. Nunca pongas aquí el número ni la contraseña de tu cuenta.
 - Los archivos compilados (`.ex5`, `.eld`, `.pla`, `.dll`) no se suben a GitHub: se generan en tu plataforma.

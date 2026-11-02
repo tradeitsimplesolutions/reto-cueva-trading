@@ -1,6 +1,10 @@
 # Prueba · primer chat con la cueva
 
 Conversación real (sin editar) con el modelo **DeepSeek (deepseek-chat)**, el 2026-10-07.
+
+> **Aviso:** esta prueba se grabó con el orden anterior del método (01 Hipótesis, 02 AED).
+> Desde noviembre de 2026 el orden es **01 AED, 02 Hipótesis**: primero se escucha al activo y
+> después se escribe la regla. La conversación se deja tal cual porque es un registro real.
 Instrucciones cargadas: `AGENTS.md` + agente `reglas` + skills `escritor-hipotesis` y `aed` +
 `metodo/plantillas/FICHA.md`. En la prueba la IA no podía escribir archivos, por eso entrega la ficha en
 el chat y dice dónde guardarla; con Copilot (modo Agent) o Claude Code la guarda ella misma en `fichas/`.

@@ -8,5 +8,5 @@ La ficha sale de la lección «Ficha técnica de tu activo» del Día 2:
   línea base (el % de velas y de días al alza).
 - **Lo que dice tu bróker:** spread, comisión, swap, tamaño del contrato y horario.
 
-La usan la fase 02 (línea base) y la fase 04 (costes del backtest). Lo que diga PENDIENTE
+La usan la fase 01 · AED (línea base y pistas) y la fase 04 (costes del backtest). Lo que diga PENDIENTE
 no se inventa: se usan los «Costes por defecto» de metodo/METODO.md, marcados «(supuesto)».

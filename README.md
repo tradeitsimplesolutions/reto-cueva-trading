@@ -112,7 +112,7 @@ Y después, para ver al Director trabajar con el Criterio TIS:
 Director, abre fichas/EJEMPLO_nas100_apertura_ny.md y dime en qué fase está esta idea
 y qué le falta para pasar la fase 04.
 ```
-Qué esperar: empieza con «Fase XX · nombre · agente o skill», no inventa cifras (la fase 02
+Qué esperar: empieza con «Fase XX · nombre · agente o skill», no inventa cifras (la fase 01
 del ejemplo está PENDIENTE porque no hay CSV) y te dice qué falta.
 
 ## 5 · Audita tu historial (Misión 1)
@@ -122,7 +122,7 @@ del ejemplo está PENDIENTE porque no hay CSV) y te dice qué falta.
    Paso a paso en `herramientas/LEEME.md`.
 3. Pulsa **Copiar para el Director**, vuelve a Claude Code y, en UN solo mensaje, escribe
    `/auditor`, un espacio, y pega el informe (Ctrl+V; en Mac Cmd+V). Luego Enter.
-   El Director guarda 3 fichas de hipótesis en `fichas/` y te pregunta cuál trabajar en el Reto.
+   El Director guarda 3 ideas (fichas) en `fichas/`, listas para medir en el AED (fase 01), y te pregunta cuál trabajar en el Reto.
    Si usaste el historial de ejemplo, las fichas son de práctica: no describen cómo operas tú.
 
 ## Lo que hay en tu cueva
@@ -148,8 +148,8 @@ mi-cueva-tis/
 
 | Día | Tema | Dónde trabajas | Entregable |
 |---|---|---|---|
-| 1 · dom 25 | Intro y Fast Start | Toda la cueva · `herramientas/` | Cueva lista + auditoría de tu historial + 3 hipótesis |
-| 2 · lun 26 | Pensando en datos | `datos/` · `activos/` · `fichas/` | Hipótesis pre-registrada + ficha técnica + fase 02 |
+| 1 · dom 25 | Intro y Fast Start | Toda la cueva · `herramientas/` | Cueva lista + auditoría de tu historial + 3 ideas |
+| 2 · lun 26 | Pensando en datos | `datos/` · `activos/` · `fichas/` | Ficha técnica + fase 01 (AED) + fase 02 (hipótesis) |
 | 3 · mar 27 | Backtesting y código | `codigo/` · `resultados/` | Skills para programar + primera curva de equity |
 | 4 · mié 28 | Tu primer sistema automatizado | `robots/` | Estrategia automatizada y probada en MetaTrader 5 |
 | 5 · jue 29 | La visión de portafolio | `portafolio/` | Segunda estrategia + mini portafolio |

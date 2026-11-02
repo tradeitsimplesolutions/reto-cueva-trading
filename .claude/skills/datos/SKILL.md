@@ -89,9 +89,9 @@ MetaTrader en «Observación del mercado» frente a su hora local, y elige la zo
   índices o cripto suelen ser noticias reales; pide que mire esos 10 en el gráfico. No le
   pidas revisar cientos. Revisarlos no bloquea la siguiente fase.
 - Si es NO APTA: di por qué y propone la alternativa (otra fuente, otra temporalidad, más años).
-- Si hay ficha, añade dentro de «Qué se hizo» de su fase 02 o 04 (el bloque sigue con 7 líneas):
+- Si hay ficha, añade dentro de «Qué se hizo» de su fase 01 o 04 (el bloque sigue con 7 líneas):
   «Datos: datos/<archivo>.csv · <veredicto> · informe en resultados/…».
-- Siguiente paso: la fase que toque (02 AED o 04 con el agente validador).
+- Siguiente paso: la fase que toque (01 AED o 04 con el agente validador).
 - Cierra con la línea de GitHub de AGENTS.md (informe y código de descarga; nada de datos/ se sube).
 
 Prohibido: inventar o rellenar precios, ocultar avisos del informe, decir que datos gratis son
